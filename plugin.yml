@@ -1,0 +1,7 @@
+name: Shield
+author: alvin0319
+main: alvin0319\ShieldPlugin\ShieldPlugin
+version: 1.0.0
+api: 3.0.0
+
+depend: ["OffHand"]
