@@ -26,7 +26,6 @@
 declare(strict_types=1);
 namespace alvin0319\ShieldPlugin;
 
-use alvin0319\OffHand\OffHandPlayer;
 use alvin0319\ShieldPlugin\item\Shield;
 use pocketmine\entity\Entity;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
@@ -37,7 +36,6 @@ use pocketmine\item\Item;
 use pocketmine\item\ItemFactory;
 use pocketmine\network\mcpe\protocol\LevelSoundEventPacket;
 use pocketmine\Player;
-use pocketmine\plugin\Plugin;
 use pocketmine\plugin\PluginBase;
 
 class ShieldPlugin extends PluginBase implements Listener{
@@ -57,14 +55,6 @@ class ShieldPlugin extends PluginBase implements Listener{
 			}else{
 				$player->setGenericFlag(Entity::DATA_FLAG_BLOCKING, false);
 			}
-		}elseif($this->getServer()->getPluginManager()->getPlugin("OffHand") instanceof Plugin){
-			if(($item = $player->getOffHandInventory()->getItemInOffHand()) instanceof Shield){
-				if($event->isSneaking()){
-					$player->setGenericFlag(Entity::DATA_FLAG_BLOCKING, true);
-				}else{
-					$player->setGenericFlag(Entity::DATA_FLAG_BLOCKING, false);
-				}
-			}
 		}
 	}
 
@@ -75,7 +65,6 @@ class ShieldPlugin extends PluginBase implements Listener{
 	public function onEntityDamageEvent(EntityDamageEvent $event) : void{
 		if($event instanceof EntityDamageByEntityEvent){
 			$d = $event->getDamager();
-			/** @var OffHandPlayer|Player $e */
 			$e = $event->getEntity();
 			if($e instanceof Player){
 				/** @var Shield $item */
@@ -92,24 +81,6 @@ class ShieldPlugin extends PluginBase implements Listener{
 								$event->setBaseDamage($finalDamage * 0.3);
 							}else{
 								$event->setCancelled();
-							}
-						}
-					}
-				}elseif($this->getServer()->getPluginManager()->getPlugin("OffHand") instanceof Plugin){
-					if(($item = $e->getOffHandInventory()->getItemInOffHand()) instanceof Shield){
-						if($e->getGenericFlag(Entity::DATA_FLAG_BLOCKING)){
-							$val = floor(abs($d->yaw - $e->yaw) / 2);
-							if($val >= 50 and $val <= 110){
-								$e->getLevel()->broadcastLevelSoundEvent($e, LevelSoundEventPacket::SOUND_ITEM_SHIELD_BLOCK);
-								//$event->setCancelled();
-								$finalDamage = $event->getFinalDamage();
-								if($finalDamage >= 4){
-									$item->applyDamage(1);
-									$e->getOffHandInventory()->setItemInOffHand($item);
-									$event->setBaseDamage($finalDamage * 0.3);
-								}else{
-									$event->setCancelled();
-								}
 							}
 						}
 					}
